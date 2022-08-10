@@ -7,7 +7,7 @@ using WorkerService.Services;
 
 namespace WorkerService
 {
-    class MyConsumer : DefaultBasicConsumer
+    /*class MyConsumer : DefaultBasicConsumer
     {
         ILogger<Worker> _logger;
         public MyConsumer(IModel model, ILogger<Worker> logger) : base(model) 
@@ -29,7 +29,7 @@ namespace WorkerService
             }
             Model.BasicAck(deliveryTag, false);
         }
-    }
+    }*/
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
@@ -44,8 +44,8 @@ namespace WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //var rabbitMqConnection = new RabbitMqConnection();
-            //rabbitMqConnection.Connect();
+            var rabbitMqConnection = new RabbitMqConnection();
+            rabbitMqConnection.Connect();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -65,7 +65,7 @@ namespace WorkerService
                 }
 
 
-
+                /*
                 Console.WriteLine("Backend");
 
                 string fromWebQName = "fromWebQueue";
@@ -85,20 +85,11 @@ namespace WorkerService
                     var consumer = new MyConsumer(channel, _logger);
                     channel.BasicQos(0, 1, false);
                     channel.BasicConsume(fromWebQName, false, consumer);
-                    /*_logger.LogInformation("Tu");
-                        var consumer = new EventingBasicConsumer(channel);
-                        consumer.Received += (sender, e) =>
-                        {
-                            var body = e.Body.ToArray();
-                            message = Encoding.UTF8.GetString(body);
-                            _logger.LogInformation(message);
-                        };
-                        channel.BasicConsume("fromWebQueue", true, consumer);*/
-                }
+                }*/
 
 
 
-                //var message = rabbitMqConnection.ReceiveMessage(_logger);
+                var message = rabbitMqConnection.ReceiveMessage(_logger);
                 if (message != "")
                 {
                     _logger.LogInformation(message);
