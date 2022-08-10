@@ -1,0 +1,28 @@
+<div class='card'>
+  <div class='card-header'>
+      <h2>{{barber?.name}}</h2>
+  </div>
+
+  <div class='card-body' *ngIf='barber'>
+    <div class='row'>
+      <div class='col-md-8'>
+        <div class='row'>
+          <button id="bookButton" (click)='onChooseBooking(barber.id)'>Umów wizytę</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class='card-body' *ngIf='barber'>
+    <div *ngIf="showBookingComponent">
+      <app-booking [id] = "barber.id">"</app-booking>
+    </div>
+  </div>
+  <div class='card-footer'>
+    <button class='btn btn-outline-secondary'
+            style='width:80px'
+            (click)='onBack()'>
+      <i class='fa fa-chevron-left'></i> Powrót
+    </button>
+  </div>
+</div>

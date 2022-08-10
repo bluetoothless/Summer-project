@@ -1,0 +1,27 @@
+<h2>Fryzjerzy</h2>
+<ul>
+ <li *ngFor="let barber of barbers">
+ &nbsp;<span>{{barber.name}}</span>&nbsp;
+    <button id="bookButton" (click)='onChooseBarber(barber.id)'>Wybierz</button>
+ </li>
+</ul>
+
+ <br />
+ <thead>
+   <tr>
+      <th>Klient</th>&nbsp;
+      <th>Fryzjer</th>&nbsp;
+      <th>Data</th>&nbsp;
+      <th>Godzina</th>&nbsp;
+      <th>Usługa</th>
+    </tr>
+ </thead>
+<tbody>
+ <tr *ngFor="let visit of visits">
+   <td>{{visit.client.name}}</td>
+   <td>{{visit.barber.name}}</td>
+   <td>{{visit.date}}</td>
+   <td>{{visit.hour}}</td>
+   <td>{{visit.barberingService.name}}</td>
+ </tr>
+</tbody>

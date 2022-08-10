@@ -1,0 +1,45 @@
+<div >
+  <tr *ngFor='let barberingService of barberingServices'>
+    <td>{{ barberingService.name }} </td> &nbsp;
+    <td>{{ barberingService.price  }} zł</td>&nbsp;
+    <td><button id="bsButton" (click)='onChooseBarberingService(barberingService.id)'>Wybierz</button></td>&nbsp;
+    <br />
+  </tr>
+
+  <div *ngIf="barberingServiceChosen">
+    <p>Wybrano usługę: {{findBarberingServiceNameById()}}</p> <br />
+    <mat-form-field>
+   <input matInput [matDatepicker]="dp" placeholder="Wybierz datę wizyty: " (dateInput)="setDate($event)">
+   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+   <br />
+   <mat-datepicker touchUi #dp disabled="false"></mat-datepicker>
+   </mat-form-field>
+  </div>
+
+  <br />
+  <div *ngIf="dateChosen">
+    <p>Wybierz godzinę wizyty: </p>
+    <mat-form-field appearance="fill">
+      <mat-label></mat-label>
+      <mat-select panelClass="mat-select-panel" (selectionChange)="setHour($event)">
+        <mat-option *ngFor="let hour of hours" [value]="hour" >
+          <p class="matt-option-text">{{hour}}</p>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <br />
+  <div *ngIf="hourChosen" class="input-field">
+    <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label></mat-label>
+        <input matInput placeholder="Imię i nazwisko" (keyup)="setName($event)">
+    </mat-form-field>
+  </div>
+</div>
+
+<br />
+<div *ngIf="clientSet">
+  <button id="confirmButton" (click)='confirm()'>Potwierdź</button>
+</div>
+<br />
