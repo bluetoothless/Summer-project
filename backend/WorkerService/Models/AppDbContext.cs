@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using WorkerService.Entities;
 
 namespace WorkerService.Models
@@ -13,7 +14,52 @@ namespace WorkerService.Models
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
-        public void AddClient()
+        public void executeAction(string action, string content)
+        {
+            switch (action)
+            {
+                case "AddVisit":
+                    var visitReceived = JsonConvert.DeserializeObject<Visit>(content);
+                    if (visitReceived != null)
+                    {
+                        var barber = Barbers.First(x => x.name == visitReceived.barber.name);
+                        var barberingService = BarberingServices.First(x => x.name == visitReceived.barberingService.name);
+                        var clientExists = Clients.Any(x => x.name == visitReceived.client.name);
+
+                        Client client;
+
+                        if (clientExists)
+                        {
+                           client = Clients.First(x => x.name == visitReceived.client.name);
+                        }
+                        else {
+                            client = new Client
+                            {
+                                name = visitReceived.client.name
+                            };
+                        }
+
+                        var visit = new Visit
+                        {
+                            barber = barber,
+                            barberingService = barberingService,
+                            date = visitReceived.date,
+                            hour = visitReceived.hour,
+                            client = client
+                        };
+                        Thread.Sleep(500);
+                        Visits.Add(visit);
+                        SaveChanges();
+                    }
+                    break;
+                case "AddClient":
+                    break;
+                default:
+                    Console.WriteLine("No action executed.");
+                    break;
+            }
+        }
+        public void AddTestClient()
         {
             var clients = new List<Client>
             {
@@ -24,12 +70,13 @@ namespace WorkerService.Models
             AddRange(clients);
             SaveChanges();
         }
-        public void AddVisit()
+        public void AddTestVisit()
         {
             var visits = new List<Visit>
             {
                 new Visit() {
                     barber = Barbers.First(),
+                    barberingService = BarberingServices.First(),
                     date = "12.09.2022",
                     hour = 11,
                     client = Clients.First(),

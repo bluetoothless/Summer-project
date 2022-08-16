@@ -24,3 +24,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .input-field {
     border: 1px solid black;
 }
+
+.visitTable, .vT {
+    border: 1px solid;
+  }
+
+  .visitTable {
+    width:700px;
+    border-collapse: collapse;
+  }

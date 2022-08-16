@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "3KbG9uWairuLCR0kORu2cVB+8iJRBG+c39NfnSSoRMmwJ/8n/4cuZrTwzLRQi+kBRwB2TcpnSKy9N2IZwTfAdA==",
+  "dgSpecHash": "YCaa6b5ccZcGIefQsANYRjGFJUjZwmWxrg5v6hCh2miFIUxNgXXpEjTAn11dExrO/LkSj5oI22MyVDOn+VoYCg==",
   "success": true,
   "projectFilePath": "D:\\Github(whaaat)\\Summer-project\\backend\\WorkerService\\WorkerService.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\natal\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\natal\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\natal\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.4\\microsoft.data.sqlclient.2.1.4.nupkg.sha512",
     "C:\\Users\\natal\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.1.1\\microsoft.data.sqlclient.sni.runtime.2.1.1.nupkg.sha512",

@@ -13,6 +13,7 @@ namespace WorkerService.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key()]
         public int id { get; set; }
         public Barber barber { get; set; }
+        public BarberingService barberingService { get; set; }
         public string date { get; set; }
         public int hour { get; set; }
         public Client client { get; set; }

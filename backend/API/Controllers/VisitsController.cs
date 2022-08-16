@@ -2,7 +2,8 @@
 using API.Services.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Web.Http.Cors;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
 {
@@ -10,9 +11,11 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class VisitsController : ControllerBase
     {
+        private readonly IVisitService _visitService;
         private readonly IBarberRepository _barberRepository;
-        public VisitsController(IBarberRepository barberRepository)
+        public VisitsController(IVisitService visitService, IBarberRepository barberRepository)
         {
+            _visitService = visitService;
             _barberRepository = barberRepository ??
                 throw new ArgumentNullException(nameof(barberRepository));
         }
@@ -26,6 +29,25 @@ namespace API.Controllers
                 return NotFound();
             }
             return Ok(visits);
+        }
+
+        [EnableCors("_myAllowSpecificOrigins")]
+        [HttpPost]
+        public async Task<IActionResult> AddVisit([FromBody] Visit visit)
+        {
+            if (visit == null)
+            {
+                return BadRequest();
+            }
+
+            var visitString = JsonConvert.SerializeObject(visit);
+            var rabbitMqConnection = new RabbitMqConnection();
+            rabbitMqConnection.Connect();
+            rabbitMqConnection.sendMessage("AddVisit", visitString);
+            //var result = await rabbitMqConnection.receiveMessage();
+
+
+            return Ok();
         }
     }
 }

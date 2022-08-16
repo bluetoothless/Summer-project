@@ -7,21 +7,20 @@
 </ul>
 
  <br />
- <thead>
+ <h2>Wizyty</h2>
+ <table class="visitTable">
    <tr>
-      <th>Klient</th>&nbsp;
-      <th>Fryzjer</th>&nbsp;
-      <th>Data</th>&nbsp;
-      <th>Godzina</th>&nbsp;
-      <th>Usługa</th>
+      <th class="vT">Data</th>
+      <th class="vT">Godzina</th>
+      <th class="vT">Klient</th>
+      <th class="vT">Fryzjer</th>
+      <th class="vT">Usługa</th>
     </tr>
- </thead>
-<tbody>
- <tr *ngFor="let visit of visits">
-   <td>{{visit.client.name}}</td>
-   <td>{{visit.barber.name}}</td>
-   <td>{{visit.date}}</td>
-   <td>{{visit.hour}}</td>
-   <td>{{visit.barberingService.name}}</td>
- </tr>
-</tbody>
+    <tr *ngFor="let visit of visits">
+      <td class="vT">{{visit.date}}</td>
+      <td class="vT">{{visit.hour}}</td>
+      <td class="vT">{{visit.client.name}}</td>
+      <td class="vT">{{visit.barber.name}}</td>
+      <td class="vT">{{visit.barberingService.name}}</td>
+    </tr>
+ </table>

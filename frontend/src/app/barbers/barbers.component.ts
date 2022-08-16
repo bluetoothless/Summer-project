@@ -15,7 +15,7 @@ export class BarbersComponent implements OnInit {
   visitsSub!: Subscription;
   barbers: IBarber[] = []
   visits: IVisit[] = []
-  errorMessage = '';
+  errorMessage = 'errorrrr';
   //public openDetails = false;
 
   constructor(
@@ -34,10 +34,22 @@ export class BarbersComponent implements OnInit {
     this.visitsSub = this.barbersService.getVisits().subscribe({
       next: visits => {
         this.visits = visits;
+        visits.sort((a, b) => stringToDate(a.date, a.hour) > stringToDate(b.date, a.hour) ? 1 : -1);
       },
       error: err => this.errorMessage = err
     });
+    console.log(this.barbers[0].name);
+    if (this.visits[0].barberingService != undefined) {
+      console.log(this.visits[0].barberingService.name);
+    }
+
+    function stringToDate(s: string, hour: number) : Date {
+      const[day, month, year] = s.split('.');
+      var a = new Date(+year, +month - 1, +day, +hour);
+      return new Date(+year, +month - 1, +day);
+    }
   }
+
   onChooseBarber(barberId: number): void {
     console.log("barbers.component.ts -> onChooseBarber(" + barberId + ")" )
     this.router.navigate(['barbers', barberId, 'details']);

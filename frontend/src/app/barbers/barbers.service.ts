@@ -31,6 +31,14 @@ export class BarbersService {
       );
   }
 
+  getBarberingService(id: number): Observable<IBarberingService | undefined> {
+    console.log("barbers.service -> getBarberingService(" + id +")");
+    return this.getBarberingServices(id)
+      .pipe(
+        map((barberingServices: IBarberingService[]) => barberingServices.find(b => b.id === id))
+      );
+  }
+
   getBarberingServices(id: number): Observable<IBarberingService[]> {
     console.log("barbers.service -> getBarberingServices("+ id +")");
     var barberingServicesUrl = this.barbersUrl + '/' + id.toString() + '/booking';
@@ -43,7 +51,7 @@ export class BarbersService {
 
   getVisits(): Observable<IVisit[]> {
     console.log("barbers.service -> getVisits()");
-    return this.http.get<IVisit[]>(this.barbersUrl)
+    return this.http.get<IVisit[]>(this.visitsUrl)
       .pipe(
         catchError(this.handleError)
       );

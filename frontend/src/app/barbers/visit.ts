@@ -4,8 +4,8 @@ import { IBarber } from "./barber";
 
 export interface IVisit {
     id: number;
-    barber: IBarber;
-    barberingService: IBarberingService;
+    barber: IBarber | undefined;
+    barberingService: IBarberingService | undefined;
     date: string;
     hour: number;
     client: IClient;

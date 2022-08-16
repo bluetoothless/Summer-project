@@ -32,7 +32,13 @@ namespace API.Services
 
         public async Task<IEnumerable<Visit>> GetVisitsAsync()
         {
-            return await _context.Visits.OrderBy(c => c.date).ToListAsync();
+            var result = await _context.Visits.OrderBy(c => c.date)
+                .Include(x => x.barber)
+                .Include(x => x.client)
+                .Include(x => x.barberingService)
+                .AsNoTracking()
+                .ToListAsync();
+            return result;
         }
 
         public async Task<IEnumerable<Client>> GetClientsAsync()

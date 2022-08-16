@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
 import { catchError, Observable, throwError } from 'rxjs';
 import { IClient } from '../clients/client';
+import { IVisit } from '../barbers/visit';
 
 @Pipe({ name: 'toInt' })
 export class ToIntPipe implements PipeTransform {
@@ -33,6 +34,26 @@ export class BookingComponent implements OnInit {
     id: -1,
     name: ""
   }
+  barber: IBarber = {
+    id: -1,
+    name: "",
+    startHour: -1,
+    endHour: -1
+  }
+  barberingService: IBarberingService = {
+    id: -1,
+    name: "",
+    price: -1,
+    duration: -1
+  }
+  visit: IVisit = {
+    id: -1,
+    barber: this.barber,
+    barberingService: this.barberingService,
+    date: "",
+    hour: -1,
+    client: this.client
+  }
   
   barberingServiceChosen = false;
   dateChosen = false;
@@ -40,12 +61,14 @@ export class BookingComponent implements OnInit {
   clientSet = false;
 
   chosenBarberId = -1;
+  chosenBarber: IBarber | undefined; 
   chosenBarberingServiceId = -1;
+  chosenBarberingService: IBarberingService | undefined; 
   chosenDate = "1.01.2022"
   chosenHour = -1;
   clientName = "";
 
-  clientResponse: any
+  visitResponse: any
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +86,22 @@ export class BookingComponent implements OnInit {
       this.chosenBarberId = barberId;
 
       this.hours = this.range(8,18);
+  }
+  
+  getBarberById(barberId: number): void {
+    console.log("booking.component.ts -> getBarberById(" + barberId +")")
+    this.barbersService.getBarber(barberId).subscribe({
+      next: barber => this.chosenBarber = barber,
+      error: err => this.errorMessage = err
+    });
+  }
+  
+  getBarberingServiceById(barberId: number): void {
+    console.log("booking.component.ts -> getBarberIngServiceById(" + barberId +")")
+    this.barbersService.getBarberingService(barberId).subscribe({
+      next: barberingService => this.chosenBarberingService = barberingService,
+      error: err => this.errorMessage = err
+    });
   }
 
   getBarberingServices(barberId: number): void {
@@ -130,15 +169,52 @@ export class BookingComponent implements OnInit {
     this.clientSet = true;
   }
 
-  confirm()  {var client = this.client;
-    this.client.id = 1;
+  async confirm()  {
+    var client = this.client;
+    client.id = 1;
     client.name = this.clientName;
     console.log("DONE; client.name = " + client.name);
 
-    this.createClient(JSON.stringify(client)).subscribe(clientResponse => {
+    /*this.createClient(JSON.stringify(client)).subscribe(clientResponse => {
       this.clientResponse = clientResponse
+    });*/
+
+    this.getBarberById(this.chosenBarberId);
+    this.getBarberingServiceById(this.chosenBarberId);
+    await new Promise(f => setTimeout(f, 1000));
+
+    
+    var visit = this.visit;
+    visit.id = 1;
+    visit.barber = this.chosenBarber;
+    visit.barberingService = this.chosenBarberingService;
+    visit.date = this.chosenDate;
+    visit.hour = this.chosenHour;
+    visit.client = client;
+    
+    if (visit.barber != undefined && visit.barberingService != undefined) {
+      console.log("DONE;\nvisit.barber.name = " + visit.barber.name + 
+                  "\nvisit.barberingService.name = " + visit.barberingService.name +
+                  "\nvisit.date = " + visit.date +
+                  "\nvisit.hour = " + visit.hour +
+                  "\nvisit.client.name = " + visit.client.name);
+    }
+    this.createVisit(JSON.stringify(visit)).subscribe(visitResponse => {
+      this.visitResponse = visitResponse
     });
     console.log("End Confirm.");
+  }
+  
+  createVisit(visit: string): Observable<IVisit> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        Authorization: 'my-auth-token'
+      })
+    };
+    console.log("Visit in Json: " + visit);
+    return this.http.post<IVisit>(this.visitsUrl, visit, httpOptions)
+    .pipe(catchError(this.handleError));
   }
 
   createClient(client: string): Observable<IClient> {
@@ -152,13 +228,6 @@ export class BookingComponent implements OnInit {
     return this.http.post<IClient>(this.clientsUrl, client, httpOptions)
     .pipe(catchError(this.handleError));
   }
-  /*addReview(reviewForm: IVisitReviewForm): Observable<void> {
-    return this.http.post<void>('/api/reviews', reviewForm);
-  }
-
-  addReviewReply(reviewId: string, reviewReplyForm: IVisitReviewReplyForm): Observable<any> {
-    return this.http.post<void>(`/api/reviews/${reviewId}/replies`, reviewReplyForm);
-  }*/
 
   range(min: number, max: number): number[] {
     var len = max - min + 1;

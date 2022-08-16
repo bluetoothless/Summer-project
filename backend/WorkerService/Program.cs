@@ -19,7 +19,10 @@ namespace WorkerService
 
                     services.AddScoped<AppDbContext>(db => new AppDbContext(optionsBuilder.Options));
 
+                    services.AddScoped<RabbitMqConnection>(rmq => new RabbitMqConnection());
+
                     services.AddHostedService<Worker>();
+
                 });
 
         private static void CreateDbIfNoneExist(IHost host)
@@ -33,8 +36,8 @@ namespace WorkerService
                     var context = service.GetRequiredService<AppDbContext>();
                     context.Database.EnsureCreated();
                     //context.FillDb();
-                    //context.AddClient();
-                    //context.AddVisit();
+                    //context.AddTestClient();
+                    //context.AddTestVisit();
                 }
                 catch (Exception)
                 {

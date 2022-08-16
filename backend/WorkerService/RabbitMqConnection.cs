@@ -62,22 +62,28 @@ namespace WorkerService
                 channel.BasicPublish("", "fromBackendQueue", null, body1);
             }
         }
-        public string ReceiveMessage(ILogger<Worker> logger)
+        public Task<string> ReceiveMessage(ILogger<Worker> logger)
         {
-            logger.LogInformation("Tu");
+            logger.LogInformation("Checking for messages...");
             using (connection = factory.CreateConnection())
             using (channel = connection.CreateModel())
             {
                 var consumer = new EventingBasicConsumer(channel);
                 var message = "";
+                //Thread.Sleep(2000);
                 consumer.Received += (sender, e) =>
                 {
                     var body = e.Body.ToArray();
                     message = Encoding.UTF8.GetString(body);
                     logger.LogInformation(message);
-                };
-                channel.BasicConsume("fromWebQueue", true, consumer);
-                return message;
+                }; 
+                //Thread.Sleep(2000);
+                //if (message != "")
+                //{
+                    channel.BasicConsume("fromWebQueue", true, consumer);
+                //}
+                Thread.Sleep(2000);
+                return Task.FromResult(message);
             }
         }
     }
