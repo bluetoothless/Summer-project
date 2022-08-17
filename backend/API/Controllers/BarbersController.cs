@@ -2,6 +2,7 @@
 using API.Services.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Web.Http.Cors;
 
 namespace API.Controllers
@@ -20,35 +21,45 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Barber>>> GetBarbers()
         {
+            try { 
             var barbers = await _barberRepository.GetBarbersAsync();
             if (barbers == null)
             {
                 return NotFound();
             }
-            /*var salon = await _context.Salons
-                .Include(s => s.Address)
-                .AsNoTracking()
-                .FirstAsync(x => x.Id == query.SalonId);*/
             return Ok(barbers);
+            }
+            catch (WebException e) when (e.Status == WebExceptionStatus.Timeout)
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet("{id}/details")]
         public async Task<IActionResult> GetBarberById(
             int id, bool includePointsOfInterest = false)
         {
-            var barber = await _barberRepository.GetBarberByIdAsync(id);
-            if (barber == null)
+            try
+            {
+                var barber = await _barberRepository.GetBarberByIdAsync(id);
+                if (barber == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(barber);
+            }
+            catch (WebException e) when (e.Status == WebExceptionStatus.Timeout)
             {
                 return NotFound();
             }
-
-            return Ok(barber);
         }
 
         [HttpGet("{id}/booking")]
         public async Task<IActionResult> GetBarberingServices(
             int id, bool includePointsOfInterest = false)
         {
+            try { 
             var barberingServices = await _barberRepository.GetBarberingServicesAsync();
             if (barberingServices == null)
             {
@@ -56,6 +67,11 @@ namespace API.Controllers
             }
 
             return Ok(barberingServices);
+            }
+            catch (WebException e) when (e.Status == WebExceptionStatus.Timeout)
+            {
+                return NotFound();
+            }
         }
     }
 }

@@ -100,15 +100,13 @@ namespace API
             using (connection = factory.CreateConnection())
             using (channel = connection.CreateModel())
             {
-                var consumer = new EventingBasicConsumer(channel);
-                var message = "";
-                consumer.Received += (sender, e) =>
+                var data = channel.BasicGet("fromBackendQueue", true);
+                if (data == null)
                 {
-                    var body = e.Body.ToArray();
-                    message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(message);
-                };
-                channel.BasicConsume("fromBackendQueue", true, consumer);
+                    return Task.FromResult("");
+                }
+                var message = Encoding.UTF8.GetString(data.Body.ToArray());
+                Console.WriteLine(message);
                 Thread.Sleep(100);
                 return Task.FromResult(message);
             }

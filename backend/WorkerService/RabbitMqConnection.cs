@@ -68,7 +68,7 @@ namespace WorkerService
             using (connection = factory.CreateConnection())
             using (channel = connection.CreateModel())
             {
-                var consumer = new EventingBasicConsumer(channel);
+                /*var consumer = new EventingBasicConsumer(channel);
                 var message = "";
                 consumer.Received += (sender, e) =>
                 {
@@ -76,8 +76,15 @@ namespace WorkerService
                     message = Encoding.UTF8.GetString(body);
                     logger.LogInformation(message);
                 }; 
-                channel.BasicConsume("fromWebQueue", true, consumer);
-                Thread.Sleep(100);
+                channel.BasicConsume("fromWebQueue", true, consumer);*/
+                var data = channel.BasicGet("fromWebQueue", true);
+                if (data == null)
+                {
+                    return Task.FromResult("");
+                }
+                var message = Encoding.UTF8.GetString(data.Body.ToArray());
+                logger.LogInformation(message);
+                //Thread.Sleep(100);
                 return Task.FromResult(message);
             }
         }

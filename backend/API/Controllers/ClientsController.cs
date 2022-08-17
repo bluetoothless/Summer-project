@@ -3,6 +3,7 @@ using API.Services.Abstract;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -21,15 +22,11 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddClient([FromBody] Client client)
         {
+            try { 
             if (client == null)
             {
                 return BadRequest();
             }
-            /*
-            Client client = new Client
-            {
-                name = clientReceived.name
-            };*/
 
             var clientString = JsonConvert.SerializeObject(client);
             var rabbitMqConnection = new RabbitMqConnection();
@@ -37,53 +34,12 @@ namespace API.Controllers
             rabbitMqConnection.SendMessage("AddClient", clientString);
             //var result = await rabbitMqConnection.receiveMessage();
             
-
             return Ok();
+            }
+            catch (WebException e) when (e.Status == WebExceptionStatus.Timeout)
+            {
+                return NotFound();
+            }
         }
-
-        /*[HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] AddReviewWebModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var result = await _operationFactory.Create<AddReviewCommand>(q =>
-            {
-                q.AddReviewModel = model.ToLogicModel();
-                q.Token = model.Token;
-            }).HandleAsync();
-
-            if (!result.HasSucceeded)
-            {
-                return BadRequest();
-            }
-
-            return Ok(result.Data.ToWebModel());
-        }
-
-        [HttpPost("{reviewId}/replies")]
-        public async Task<IActionResult> AddReviewReply([FromBody] AddReviewReplyWebModel model, Guid reviewId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var result = await _operationFactory.Create<AddReviewReplyCommand>(q =>
-            {
-                q.ReviewReplyContent = model.ReplyText;
-                q.ReplyToken = model.ReplyToken;
-                q.ReviewId = reviewId;
-            }).HandleAsync();
-
-            if (!result.HasSucceeded)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
-        }*/
     }
 }
