@@ -70,19 +70,14 @@ namespace WorkerService
             {
                 var consumer = new EventingBasicConsumer(channel);
                 var message = "";
-                //Thread.Sleep(2000);
                 consumer.Received += (sender, e) =>
                 {
                     var body = e.Body.ToArray();
                     message = Encoding.UTF8.GetString(body);
                     logger.LogInformation(message);
                 }; 
-                //Thread.Sleep(2000);
-                //if (message != "")
-                //{
-                    channel.BasicConsume("fromWebQueue", true, consumer);
-                //}
-                Thread.Sleep(2000);
+                channel.BasicConsume("fromWebQueue", true, consumer);
+                Thread.Sleep(100);
                 return Task.FromResult(message);
             }
         }

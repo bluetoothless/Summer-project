@@ -39,7 +39,7 @@ namespace API
 
         public void Connect()
         {
-            Console.WriteLine("Frontend");
+            Console.WriteLine("Web server");
 
             string fromWebQName = "fromWebQueue";
             string fromBackendQName = "fromBackendQueue";
@@ -83,7 +83,7 @@ namespace API
             }
         }
 
-        public void sendMessage(string messageName, string content)
+        public void SendMessage(string messageName, string content)
         {
             using (connection = factory.CreateConnection())
             using (channel = connection.CreateModel())
@@ -94,18 +94,24 @@ namespace API
             }
         }
 
-        public async Task<string> receiveMessage()
+        public Task<string> ReceiveMessage()
         {
-            var consumer = new EventingBasicConsumer(channel);
-            var message = "";
-            consumer.Received += (sender, e) =>
+            Console.WriteLine("Checking for messages...");
+            using (connection = factory.CreateConnection())
+            using (channel = connection.CreateModel())
             {
-                var body = e.Body.ToArray();
-                message = Encoding.UTF8.GetString(body);
-                Console.WriteLine(message);
-            };
-            channel.BasicConsume("fromBackendQueue", true, consumer);
-            return message;
+                var consumer = new EventingBasicConsumer(channel);
+                var message = "";
+                consumer.Received += (sender, e) =>
+                {
+                    var body = e.Body.ToArray();
+                    message = Encoding.UTF8.GetString(body);
+                    Console.WriteLine(message);
+                };
+                channel.BasicConsume("fromBackendQueue", true, consumer);
+                Thread.Sleep(100);
+                return Task.FromResult(message);
+            }
         }
     }
 }

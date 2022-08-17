@@ -43,7 +43,7 @@ namespace API.Controllers
             var visitString = JsonConvert.SerializeObject(visit);
             var rabbitMqConnection = new RabbitMqConnection();
             rabbitMqConnection.Connect();
-            rabbitMqConnection.sendMessage("AddVisit", visitString);
+            rabbitMqConnection.SendMessage("AddVisit", visitString);
             //var result = await rabbitMqConnection.receiveMessage();
 
 

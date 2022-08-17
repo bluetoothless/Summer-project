@@ -38,10 +38,10 @@ namespace WorkerService
                 {
                     dbHelper.SeedUsers();
                 }
-                else
+                /*else
                 {
                     DisplayUserInformation(users);
-                }
+                }*/
 
                 var messageString = await rabbitMqConnection.ReceiveMessage(_logger);
                 if (messageString != "")
@@ -57,6 +57,7 @@ namespace WorkerService
                             context.executeAction(action, content);
                         }
                     }
+                    rabbitMqConnection.SendMessage("Result", "Success");
                 }
 
                 await Task.Delay(10000, stoppingToken);

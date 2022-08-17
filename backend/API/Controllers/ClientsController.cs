@@ -34,7 +34,7 @@ namespace API.Controllers
             var clientString = JsonConvert.SerializeObject(client);
             var rabbitMqConnection = new RabbitMqConnection();
             rabbitMqConnection.Connect();
-            rabbitMqConnection.sendMessage("AddClient", clientString);
+            rabbitMqConnection.SendMessage("AddClient", clientString);
             //var result = await rabbitMqConnection.receiveMessage();
             
 

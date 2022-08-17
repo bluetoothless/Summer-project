@@ -15,6 +15,7 @@ export class BarbersComponent implements OnInit {
   visitsSub!: Subscription;
   barbers: IBarber[] = []
   visits: IVisit[] = []
+  visitBarberNames = "";
   errorMessage = 'errorrrr';
   //public openDetails = false;
 
