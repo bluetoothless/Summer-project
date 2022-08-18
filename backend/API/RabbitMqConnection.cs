@@ -96,18 +96,28 @@ namespace API
 
         public Task<string> ReceiveMessage()
         {
-            Console.WriteLine("Checking for messages...");
             using (connection = factory.CreateConnection())
             using (channel = connection.CreateModel())
             {
-                var data = channel.BasicGet("fromBackendQueue", true);
+                /*var data = channel.BasicGet("fromBackendQueue", true);
                 if (data == null)
                 {
                     return Task.FromResult("");
                 }
                 var message = Encoding.UTF8.GetString(data.Body.ToArray());
-                Console.WriteLine(message);
-                Thread.Sleep(100);
+                Console.WriteLine(message);*/
+
+                var consumer = new EventingBasicConsumer(channel);
+                var message = "";
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body.ToArray();
+                    message = Encoding.UTF8.GetString(body);
+                    Console.WriteLine(message);
+                };
+                channel.BasicConsume(queue: "fromBackendQueue",
+                                     autoAck: true,
+                                     consumer: consumer);
                 return Task.FromResult(message);
             }
         }
