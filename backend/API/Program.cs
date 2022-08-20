@@ -3,6 +3,7 @@ using API.Models;
 using API.Services;
 using API.Services.Abstract;
 using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -36,6 +37,7 @@ builder.Services.AddDbContext<AppDbContext>(
         builder.Configuration["ConnectionStrings:DefaultConnection"]));
 
 builder.Services.AddScoped<IBarberRepository, BarberRepository>();
+builder.Services.AddScoped<ConfirmationMessageHub>();
 
 builder.Services.AddSignalR();
 

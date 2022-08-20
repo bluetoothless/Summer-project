@@ -14,6 +14,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http
 import { catchError, Observable, throwError } from 'rxjs';
 import { IClient } from '../clients/client';
 import { IVisit } from '../barbers/visit';
+import * as signalR from "@microsoft/signalr";
 
 @Pipe({ name: 'toInt' })
 export class ToIntPipe implements PipeTransform {
@@ -27,6 +28,7 @@ export class ToIntPipe implements PipeTransform {
 export class BookingComponent implements OnInit {
   clientsUrl = 'https://localhost:7071/api/clients';
   visitsUrl = 'https://localhost:7071/api/visits';
+  confirmationUrl = 'https://localhost:7071/api/confirmation';
   errorMessage = '';
   barberingServices: IBarberingService[] | undefined; 
   hours: number[] | undefined
@@ -69,7 +71,8 @@ export class BookingComponent implements OnInit {
   chosenHour = -1;
   clientName = "";
 
-  visitResponse: any
+  visitResponse: any;
+  hubConnection?: signalR.HubConnection;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,8 +89,29 @@ export class BookingComponent implements OnInit {
       }
       this.chosenBarberId = barberId;
 
-      this.hours = this.range(8,18);
+      this.hours = this.range(8,18); 
+      this.startSignalRConnection();
+      this.addSignalRListener();
   }
+
+  startSignalRConnection(){
+    this.hubConnection = new signalR.HubConnectionBuilder()
+                            .withUrl(this.confirmationUrl)
+                            .build();
+      this.hubConnection
+      .start()
+      .then(() => console.log('Connection started'))
+      .catch(err => console.log('Error while starting connection: ' + err))
+  };
+      
+  addSignalRListener() {
+    if (this.hubConnection != undefined) {
+      this.hubConnection.on('Success', (data) => {
+        console.log(data);
+        this.router.navigate(['barbers']);
+      });
+    }
+  };
   
   getBarberById(barberId: number): void {
     console.log("booking.component.ts -> getBarberById(" + barberId +")")
@@ -201,7 +225,6 @@ export class BookingComponent implements OnInit {
     });
     console.log("End Confirm.");
 
-    this.router.navigate(['barbers']);
   }
 
   createVisit(visit: string): Observable<IVisit> {
