@@ -40,6 +40,9 @@
 
 <br />
 <div *ngIf="clientSet">
-  <button id="confirmButton" (click)='confirm()'>Potwierdź</button>
+  <button id="confirmButton" [disabled]="clickedConfirm" (click)='confirm()'>Potwierdź</button>
+</div>
+<div *ngIf="clickedConfirm">
+  <p>Dodawanie wizyty...</p>
 </div>
 <br />

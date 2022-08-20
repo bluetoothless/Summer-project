@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -32,9 +33,10 @@ namespace API
         public ConnectionFactory factory;
         public IModel? channel;
         public IConnection? connection;
-        public RabbitMqConnection()
+        public IHubContext<ConfirmationMessageHub> _hubContext;
+        public RabbitMqConnection(IHubContext<ConfirmationMessageHub> hubContext)
         {
-
+            _hubContext = hubContext;
         }
 
         public void Connect()
@@ -56,30 +58,6 @@ namespace API
             {
                 channel.QueueDeclare(fromWebQName, true, false, false, null);
                 channel.QueueDeclare(fromBackendQName, true, false, false, null);
-                //var message = receiveMessage();
-                /*MyConsumer consumer = new MyConsumer(channel);
-                channel.BasicQos(0, 1, false);
-                channel.BasicConsume(qName, false, consumer);
-                Console.ReadKey();*/
-
-
-                /*var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (sender, e) =>
-                {
-                    var body = e.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(message);
-                };
-                channel.BasicConsume("kolejka1", true, consumer);*/
-                //Console.ReadLine();
-
-                /*      WIADOMOSC DO KOLEJKI*/
-                /*var message1 = new { Name = "Barbers", Message = $"{barbers}" };
-                var body1 = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message1));
-                channel.BasicPublish("", "kolejka1", null, body1);
-                Console.ReadLine();*/
-                //sendMessage("Barbers", barbers, channel);
-                //Console.ReadLine();
             }
         }
 
@@ -94,32 +72,36 @@ namespace API
             }
         }
 
-        public Task<string> ReceiveMessage()
+        public void ReceiveMessage()
         {
-            using (connection = factory.CreateConnection())
-            using (channel = connection.CreateModel())
+            IConnection? connection;
+            IModel? channel;
+            var message = "";
+            connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (model, ea) =>
             {
-                /*var data = channel.BasicGet("fromBackendQueue", true);
-                if (data == null)
+                var body = ea.Body.ToArray();
+                message = Encoding.UTF8.GetString(body);
+                Console.WriteLine(message);
+                var mes = JsonConvert.DeserializeObject<Messaging>(message);
+                if (mes != null)
                 {
-                    return Task.FromResult("");
+                    var action = mes.Name;
+                    var content = mes.Message;
+                    if (content == "Success")
+                    {
+                        _hubContext.Clients.All.SendAsync(content);
+                        Console.WriteLine("Action successfully executed!");
+                    }
+                    connection.Close();
+                    channel.Close();
                 }
-                var message = Encoding.UTF8.GetString(data.Body.ToArray());
-                Console.WriteLine(message);*/
-
-                var consumer = new EventingBasicConsumer(channel);
-                var message = "";
-                consumer.Received += (model, ea) =>
-                {
-                    var body = ea.Body.ToArray();
-                    message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(message);
-                };
-                channel.BasicConsume(queue: "fromBackendQueue",
-                                     autoAck: true,
-                                     consumer: consumer);
-                return Task.FromResult(message);
-            }
+            };
+            channel.BasicConsume(queue: "fromBackendQueue",
+                                    autoAck: true,
+                                    consumer: consumer);
         }
     }
 }

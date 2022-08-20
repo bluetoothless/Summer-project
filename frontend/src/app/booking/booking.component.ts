@@ -59,6 +59,7 @@ export class BookingComponent implements OnInit {
   dateChosen = false;
   hourChosen = false;
   clientSet = false;
+  clickedConfirm = false;
 
   chosenBarberId = -1;
   chosenBarber: IBarber | undefined; 
@@ -170,20 +171,16 @@ export class BookingComponent implements OnInit {
   }
 
   async confirm()  {
+    this.clickedConfirm = true;
     var client = this.client;
     client.id = 1;
     client.name = this.clientName;
     console.log("DONE; client.name = " + client.name);
 
-    /*this.createClient(JSON.stringify(client)).subscribe(clientResponse => {
-      this.clientResponse = clientResponse
-    });*/
-
     this.getBarberById(this.chosenBarberId);
     this.getBarberingServiceById(this.chosenBarberId);
     await new Promise(f => setTimeout(f, 1000));
-
-    
+ 
     var visit = this.visit;
     visit.id = 1;
     visit.barber = this.chosenBarber;
@@ -203,8 +200,10 @@ export class BookingComponent implements OnInit {
       this.visitResponse = visitResponse
     });
     console.log("End Confirm.");
+
+    this.router.navigate(['barbers']);
   }
-  
+
   createVisit(visit: string): Observable<IVisit> {
     const httpOptions = {
       headers: new HttpHeaders({

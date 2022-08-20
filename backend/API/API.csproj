@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\WeatherForecastController.cs" />
+    <Compile Remove="Models\ConfirmationMessage.cs" />
+    <Compile Remove="Services\Abstract\IClientService.cs" />
+    <Compile Remove="Services\Abstract\IVisitService.cs" />
+    <Compile Remove="Services\ClientService.cs" />
+    <Compile Remove="Services\VisitService.cs" />
     <Compile Remove="WeatherForecast.cs" />
   </ItemGroup>
 

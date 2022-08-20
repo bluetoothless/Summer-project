@@ -4,10 +4,6 @@ using API.Services;
 using API.Services.Abstract;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
 using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -40,8 +36,8 @@ builder.Services.AddDbContext<AppDbContext>(
         builder.Configuration["ConnectionStrings:DefaultConnection"]));
 
 builder.Services.AddScoped<IBarberRepository, BarberRepository>();
-builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddScoped<IVisitService, VisitService>();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -64,38 +60,8 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();
+    endpoints.MapControllers(); 
+    endpoints.MapHub<ConfirmationMessageHub>("/confirmation");
 });
-
-var rabbitMqConnection = new RabbitMqConnection();
-rabbitMqConnection.Connect();
-
-IConnection? connection;
-IModel? channel;
-var message = "";
-using (connection = rabbitMqConnection.factory.CreateConnection())
-using (channel = connection.CreateModel())
-{
-    var consumer = new EventingBasicConsumer(channel);
-    consumer.Received += (model, ea) =>
-    {
-        var body = ea.Body.ToArray();
-        message = Encoding.UTF8.GetString(body);
-        Console.WriteLine(message);
-    };
-    channel.BasicConsume(queue: "fromBackendQueue",
-                         autoAck: true,
-                         consumer: consumer);
-}
-var mes = JsonConvert.DeserializeObject<Messaging>(message);
-if (mes != null)
-{
-    var action = mes.Name;
-    var content = mes.Message;
-    if (content == "Success")
-    {
-        Console.WriteLine("Action successfully executed!");
-    }
-}
 
 app.Run();

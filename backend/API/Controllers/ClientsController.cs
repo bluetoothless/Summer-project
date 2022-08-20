@@ -10,11 +10,9 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ClientsController : ControllerBase
     {
-        private readonly IClientService _clientService;
         private readonly IBarberRepository _barberRepository;
-        public ClientsController(IClientService clientService, IBarberRepository barberRepository)
+        public ClientsController(IBarberRepository barberRepository)
         {
-            _clientService = clientService;
             _barberRepository = barberRepository;
         }
 
@@ -29,9 +27,9 @@ namespace API.Controllers
             }
 
             var clientString = JsonConvert.SerializeObject(client);
-            var rabbitMqConnection = new RabbitMqConnection();
-            rabbitMqConnection.Connect();
-            rabbitMqConnection.SendMessage("AddClient", clientString);
+            //var rabbitMqConnection = new RabbitMqConnection();
+            //rabbitMqConnection.Connect();
+            //rabbitMqConnection.SendMessage("AddClient", clientString);
             //var result = await rabbitMqConnection.receiveMessage();
             
             return Ok();
