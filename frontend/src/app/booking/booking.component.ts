@@ -28,7 +28,7 @@ export class ToIntPipe implements PipeTransform {
 export class BookingComponent implements OnInit {
   clientsUrl = 'https://localhost:7071/api/clients';
   visitsUrl = 'https://localhost:7071/api/visits';
-  confirmationUrl = 'https://localhost:7071/api/confirmation';
+  confirmationUrl = 'https://localhost:7071/confirmation';
   errorMessage = '';
   barberingServices: IBarberingService[] | undefined; 
   hours: number[] | undefined
@@ -95,8 +95,12 @@ export class BookingComponent implements OnInit {
   }
 
   startSignalRConnection(){
+    console.log("Attempt")
     this.hubConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(this.confirmationUrl)
+                            .withUrl(this.confirmationUrl, {
+                              skipNegotiation: true,
+                              transport: signalR.HttpTransportType.WebSockets
+                            })
                             .build();
       this.hubConnection
       .start()

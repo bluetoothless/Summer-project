@@ -6,28 +6,6 @@ using System.Text;
 
 namespace API
 {
-    class MyConsumer : DefaultBasicConsumer
-    {
-        public MyConsumer(IModel model) : base(model) { }
-
-        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
-        {
-            var message = Encoding.UTF8.GetString(body.ToArray());
-
-            if (properties.Headers == null)
-            {
-                Console.WriteLine(message);
-            }
-            else
-            {
-                string autor = Encoding.UTF8.GetString((byte[])properties.Headers["autor"]);
-                int index = (int)properties.Headers["index"];
-                Console.WriteLine($"autor: {autor}\nindeks: {index} \nwiadomosc: {message}\n");
-            }
-            System.Threading.Thread.Sleep(2000);
-            Model.BasicAck(deliveryTag, false);
-        }
-    }
     public class RabbitMqConnection
     {
         public ConnectionFactory factory;
@@ -82,6 +60,7 @@ namespace API
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
+                Thread.Sleep(100);
                 var body = ea.Body.ToArray();
                 message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(message);
@@ -95,13 +74,13 @@ namespace API
                         _hubContext.Clients.All.SendAsync(content);
                         Console.WriteLine("Action successfully executed!");
                     }
-                    connection.Close();
                     channel.Close();
+                    connection.Close();
                 }
             };
             channel.BasicConsume(queue: "fromBackendQueue",
-                                    autoAck: true,
-                                    consumer: consumer);
+                                autoAck: true,
+                                consumer: consumer);
         }
     }
 }

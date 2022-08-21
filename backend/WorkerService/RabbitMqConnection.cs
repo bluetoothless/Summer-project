@@ -37,17 +37,6 @@ namespace WorkerService
             {
                 channel.QueueDeclare(fromWebQName, true, false, false, null);
                 channel.QueueDeclare(fromBackendQName, true, false, false, null);
-                /*MyConsumer consumer = new MyConsumer(channel);
-                channel.BasicQos(0, 1, false);
-                channel.BasicConsume(qName, false, consumer);
-                Console.ReadKey();*/
-
-
-                //      WIADOMOSC DO KOLEJKI
-                /*var message = new { Name = "Sklep", Message = "Hello!" };
-                var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-                channel.BasicPublish("", "fromWebQueue", null, body);*/
-                //sendMessage("Message1", "Message sent from Worker");
 
             }
         }
@@ -60,6 +49,7 @@ namespace WorkerService
                 var message1 = new { Name = $"{messageName}", Message = $"{content}" };
                 var body1 = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message1));
                 channel.BasicPublish("", "fromBackendQueue", null, body1);
+                Console.WriteLine("Sending confirmation message...");
             }
         }
         public Task<string> ReceiveMessage(ILogger<Worker> logger)

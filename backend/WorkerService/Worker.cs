@@ -60,7 +60,7 @@ namespace WorkerService
                     rabbitMqConnection.SendMessage("Result", "Success");
                 }
 
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
         private void DisplayUserInformation(List<Client> users)
