@@ -25,10 +25,11 @@ namespace API
             string fromBackendQName = "fromBackendQueue";
             factory = new ConnectionFactory()
             {
-                UserName = "xzghooiz",
-                Password = "W_2R6sH6OLg5WU86J0upqHdStyDIUyyW",
-                HostName = "hawk.rmq.cloudamqp.com",
-                VirtualHost = "xzghooiz"
+                UserName = "jrbxnwoz",
+                Password = "IOBzbbc6c4rpeZ_ZjndU2M59eDp3_74v",
+                HostName = "kebnekaise.lmq.cloudamqp.com",
+                VirtualHost = "jrbxnwoz",
+                Port = 5672
             };
 
             using (connection = factory.CreateConnection())
